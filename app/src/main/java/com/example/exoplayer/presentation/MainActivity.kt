@@ -22,6 +22,18 @@ class MainActivity : AppCompatActivity(), Player.Listener {
         setContentView(binding.root)
 
         setupPlayer()
+
+        savedInstanceState?.getInt(KEY_MEDIA_ITEM_INDEX)?.let { mediaItemIndex ->
+            val currentTimePosition = savedInstanceState.getLong(KEY_CURRENT_TIME_POSITION)
+            player.seekTo(mediaItemIndex, currentTimePosition)
+            player.play()
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putLong(KEY_CURRENT_TIME_POSITION, player.currentPosition)
+        outState.putInt(KEY_MEDIA_ITEM_INDEX, player.currentMediaItemIndex)
     }
 
     private fun setupPlayer() {
@@ -37,6 +49,11 @@ class MainActivity : AppCompatActivity(), Player.Listener {
         player.addListener(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        player.release()
+    }
+
     override fun onPlaybackStateChanged(playbackState: Int) {
         super.onPlaybackStateChanged(playbackState)
         when (playbackState) {
@@ -47,5 +64,10 @@ class MainActivity : AppCompatActivity(), Player.Listener {
                 binding.progressBar.visibility = View.INVISIBLE
             }
         }
+    }
+
+    companion object {
+        private const val KEY_CURRENT_TIME_POSITION = "CurrentTimePosition"
+        private const val KEY_MEDIA_ITEM_INDEX = "MediaItem"
     }
 }

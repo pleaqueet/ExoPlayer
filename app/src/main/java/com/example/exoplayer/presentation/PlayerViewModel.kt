@@ -37,6 +37,7 @@ class PlayerViewModel @Inject constructor(
     }
 
     init {
+
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 playerMedia = getMediaUseCase()
